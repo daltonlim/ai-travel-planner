@@ -1,48 +1,205 @@
-# 🌍 AI Travel Planner
+# AI Travel Planner
 
-An intelligent travel itinerary planner powered by OpenAI's GPT-4o mini that creates personalized travel experiences based on your preferences, budget, and interests.
+An AI-powered travel itinerary planner that creates personalized travel plans using OpenAI's GPT-4o mini model.
 
-## ✨ Features
+## Features
 
-- **AI-Powered Itineraries**: Generate detailed travel plans using advanced AI
-- **Personalized Recommendations**: Tailored suggestions based on your interests and preferences
-- **Budget-Aware Planning**: Get recommendations that fit your budget
-- **Beautiful UI**: Modern, responsive interface with an intuitive design
-- **Flexible Planning**: Support for various trip durations, group sizes, and accommodation types
+- **AI-Generated Itineraries**: Detailed day-by-day travel plans with recommendations
+- **Customizable Parameters**: Destination, duration, budget, interests, group size, and accommodation preferences
+- **React Frontend**: Modern React application with Zustand state management
+- **Responsive Design**: Works on desktop and mobile devices
+- **Real-time Generation**: Powered by OpenAI GPT-4o mini for intelligent planning
+- **Export Options**: Print-friendly itinerary pages
+- **Persistent Storage**: Automatic saving of form data and generated itineraries
 
-## 🚀 Getting Started
+## Architecture
 
-### Prerequisites
+### Frontend (React)
+- **Framework**: React 18 with functional components and hooks
+- **State Management**: Zustand with persistence middleware
+- **Routing**: React Router for client-side navigation
+- **Styling**: CSS modules with responsive design
+- **Development Server**: Runs on port 3000
 
-- Node.js (version 14 or higher)
-- npm or yarn
-- OpenAI API key
+### Backend (Express)
+- **Framework**: Express.js with middleware for security and CORS
+- **AI Integration**: OpenAI GPT-4o mini API
+- **Rate Limiting**: Built-in request limiting to prevent abuse
+- **Production Server**: Runs on port 3001 (development)
 
-### Installation
+## Quick Start
 
-1. Clone the repository:
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd ai-travel-planner
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   cd client && npm install && cd ..
+   ```
+
+3. **Set up environment variables**
+   ```bash
+   cp .env.example .env
+   # Edit .env and add your OpenAI API key
+   OPENAI_API_KEY=your_openai_api_key_here
+   PORT=3001
+   ```
+
+4. **Start the development environment**
+   ```bash
+   npm run dev
+   ```
+
+   This runs both the React frontend (http://localhost:3000) and Express backend (http://localhost:3001) concurrently.
+
+## Development Commands
+
 ```bash
-git clone https://github.com/daltonlim/ai-travel-planner.git
-cd ai-travel-planner
+npm run dev      # Start both frontend and backend
+npm run client   # Start React app only
+npm run server   # Start Express server only
+npm run build    # Build React app for production
+npm start        # Start production server
 ```
 
-2. Install dependencies:
+## State Management
+
+The application uses **Zustand** for state management:
+
+- **Automatic Persistence**: Form data and itineraries are saved to localStorage
+- **Simple API**: Clean state updates without boilerplate
+- **Type-Safe**: Full TypeScript support (when enabled)
+
+### Store Structure
+```javascript
+{
+  formData: {
+    destination: '',
+    duration: '',
+    budget: '',
+    interests: '',
+    travelDates: '',
+    groupSize: '',
+    accommodationType: ''
+  },
+  itinerary: null,
+  generatedAt: null,
+  isGenerating: false,
+  error: null
+}
+```
+
+## API Endpoints
+
+### Generate Itinerary
+```http
+POST /api/plan-trip
+Content-Type: application/json
+
+{
+  "destination": "Tokyo, Japan",
+  "duration": "7 days",
+  "budget": "$2000",
+  "interests": "temples, food, technology",
+  "travelDates": "March 2024",
+  "groupSize": "couple",
+  "accommodationType": "mid-range hotels"
+}
+```
+
+### Health Check
+```http
+GET /api/health
+```
+
+## Component Structure
+
+```
+client/src/
+├── components/
+│   ├── TravelForm.js          # Main form component
+│   ├── TravelForm.css         # Form styling
+│   ├── ItineraryDisplay.js    # Results display
+│   └── ItineraryDisplay.css   # Results styling
+├── store/
+│   └── travelStore.js         # Zustand store
+├── utils/
+│   └── formatItinerary.js     # Text formatting utilities
+└── App.js                     # Router setup
+```
+
+## Deployment
+
+### Production Build
 ```bash
-npm install
+npm run build
+NODE_ENV=production npm start
 ```
 
-3. Create a `.env` file in the root directory and add your OpenAI API key:
-```env
-OPENAI_API_KEY=your_openai_api_key_here
-PORT=3000
-```
+The Express server will automatically serve the built React app in production mode.
 
-4. Start the development server:
+### Environment Variables
+- `OPENAI_API_KEY`: Your OpenAI API key (required)
+- `PORT`: Server port (default: 3001)
+- `NODE_ENV`: Environment mode (development/production)
+- `MAX_REQUESTS_PER_MINUTE`: Rate limiting (default: 10)
+
+## Testing
+
+Test the API directly:
 ```bash
-npm run dev
+node test-api.js
 ```
 
-5. Open your browser and navigate to `http://localhost:3000`
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
+
+## License
+
+MIT License - see LICENSE file for details.
+
+## Migration to React
+
+This application has been fully converted from vanilla JavaScript with localStorage to a modern React application:
+
+### What Was Converted
+
+1. **Vanilla JS → React Components**
+   - `public/index.html` → `client/src/components/TravelForm.js`
+   - `public/itinerary.html` → `client/src/components/ItineraryDisplay.js`
+   - `public/app.js` → React components with hooks
+
+2. **localStorage → Zustand Store**
+   - Direct localStorage manipulation → Zustand store with persist middleware
+   - Manual state management → Automatic state persistence and hydration
+   - Imperative updates → Declarative state actions
+
+3. **Manual Navigation → React Router**
+   - `window.location.href` redirects → `useNavigate()` hook
+   - Static HTML pages → Single Page Application (SPA)
+   - Manual URL handling → Client-side routing
+
+### Benefits of the Conversion
+
+- **Better State Management**: Zustand provides predictable state updates with automatic persistence
+- **Component Reusability**: React components can be easily reused and tested
+- **Modern Development**: Hot reloading, component dev tools, and better debugging
+- **Type Safety**: Ready for TypeScript conversion if needed
+- **Better UX**: Instant navigation, no page reloads, smoother interactions
+- **Maintainability**: Cleaner code organization and easier to extend
+
+### Backward Compatibility
+
+The API endpoints remain unchanged, so any existing integrations will continue to work seamlessly.
 
 ## 🛠️ Usage
 
