@@ -144,7 +144,26 @@ app.post('/api/plan-trip', rateLimit, async (req, res) => {
       accommodationType
     );
 
-    console.log('Generating itinerary for:', { destination, duration, budget });
+    console.log('\n' + '='.repeat(80));
+    console.log('🚀 NEW TRAVEL PLANNING REQUEST');
+    console.log('='.repeat(80));
+    console.log('📅 Timestamp:', new Date().toISOString());
+    console.log('📍 Request Details:', { 
+      destination, 
+      duration, 
+      budget: budget || 'Not specified',
+      interests: interests || 'General sightseeing',
+      travelDates: travelDates || 'Flexible',
+      groupSize: groupSize || '1 person',
+      accommodationType: accommodationType || 'Any'
+    });
+    console.log('\n📝 COMPLETE PROMPT SENT TO OPENAI:');
+    console.log('-'.repeat(50));
+    console.log('System Message:', 'You are an expert travel planner with extensive knowledge of destinations worldwide. Provide detailed, practical, and personalized travel itineraries.');
+    console.log('\nUser Message:');
+    console.log(prompt);
+    console.log('-'.repeat(50));
+    console.log('🤖 Sending to OpenAI GPT-4o-mini...\n');
 
     // Call OpenAI API
     const completion = await openai.chat.completions.create({
@@ -164,6 +183,11 @@ app.post('/api/plan-trip', rateLimit, async (req, res) => {
     });
 
     const itinerary = completion.choices[0].message.content;
+
+    console.log('✅ OpenAI Response received successfully');
+    console.log('📊 Response length:', itinerary.length, 'characters');
+    console.log('💰 Tokens used:', completion.usage?.total_tokens || 'Unknown');
+    console.log('='.repeat(80) + '\n');
 
     res.json({
       success: true,
